@@ -9,7 +9,7 @@ This repository contains an implementation of **Finite Impulse Response (FIR) fi
 ```
 FIR_Filters/
 ├── input/                # Contains input audio files in .pcm format
-├── output/               # Stores filter coefficients and processed audio files
+├── output/               # Stores processed audio files
 ├── generate_coefficients.py  # Script to generate FIR filter coefficients
 ├── apply_filter.py       # Script to apply FIR filters to audio files
 ```
@@ -105,8 +105,6 @@ The filtered audio files will be saved in the `output/` folder.
 ---
 
 ## **References**
-- Hamming Window: https://en.wikipedia.org/wiki/Window_function#Hamming_window
-- FIR Filter Design: https://en.wikipedia.org/wiki/Finite_impulse_response
 
 Feel free to modify the scripts to suit your specific needs or extend the implementation!
 

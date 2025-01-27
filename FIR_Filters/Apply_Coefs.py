@@ -2,87 +2,87 @@ import numpy as np
 import struct
 import os
 
-# Define diretórios fixos, ter certeza que o terminal esta na pasta correta
+# Define fixed directories, ensure the terminal is in the correct folder
 INPUT_DIR = "input"
 OUTPUT_DIR = "output"
 
-# Função para carregar os coeficientes de acordo com o filtro selecionado
-def carregar_coeficientes():
-    opcoes = {
-        1: "coeficientesPB.txt",
-        2: "coeficientesPA.txt",
-        3: "coeficientesPF.txt",
-        4: "coeficientesRF.txt"
+# Function to load coefficients based on the selected filter type
+def load_coefficients():
+    options = {
+        1: "low_pass_coefficients.txt",
+        2: "high_pass_coefficients.txt",
+        3: "band_pass_coefficients.txt",
+        4: "band_stop_coefficients.txt"
     }
 
-    print("Escolha o tipo de filtro a ser aplicado:")
-    print("1 - Passa-baixo")
-    print("2 - Passa-alto")
-    print("3 - Passa-faixa")
-    print("4 - Rejeita-faixa")
+    print("Select the type of filter to apply:")
+    print("1 - Low Pass")
+    print("2 - High Pass")
+    print("3 - Band Pass")
+    print("4 - Band Stop")
 
-    escolha = int(input("Digite o número da sua escolha: "))
+    choice = int(input("Enter the number of your choice: "))
 
-    if escolha not in opcoes:
-        raise ValueError("Escolha inválida! Por favor, selecione um número entre 1 e 4.")
+    if choice not in options:
+        raise ValueError("Invalid choice! Please select a number between 1 and 4.")
 
-    arquivo_coef = opcoes[escolha]
-    caminho_coef = os.path.join(INPUT_DIR, arquivo_coef)
+    coef_file = options[choice]
+    coef_path = os.path.join(INPUT_DIR, coef_file)
 
-    if not os.path.exists(caminho_coef):
-        raise FileNotFoundError(f"Arquivo de coeficientes '{arquivo_coef}' não encontrado em '{INPUT_DIR}'.")
+    if not os.path.exists(coef_path):
+        raise FileNotFoundError(f"Coefficient file '{coef_file}' not found in '{INPUT_DIR}'.")
 
-    with open(caminho_coef, "r") as f:
-        coeficientes = [float(linha.strip()) for linha in f]
+    with open(coef_path, "r") as f:
+        coefficients = [float(line.strip()) for line in f]
 
-    return np.array(coeficientes)
+    return np.array(coefficients)
 
-# Função para aplicar os coeficientes a um arquivo .pcm
-def aplicar_filtro(input_file, output_file, coeficientes, bits):
-    # Determina o formato dos dados com base na profundidade de bits
-    formato = "h" if bits == 16 else "i"
-    tamanho_amostra = 2 if bits == 16 else 4
+# Function to apply the coefficients to a .pcm file
+def apply_filter(input_file, output_file, coefficients, bits):
+    # Determine data format based on bit depth
+    fmt = "h" if bits == 16 else "i"
+    sample_size = 2 if bits == 16 else 4
 
-    caminho_input = os.path.join(INPUT_DIR, input_file)
-    caminho_output = os.path.join(OUTPUT_DIR, output_file)
+    input_path = os.path.join(INPUT_DIR, input_file)
+    output_path = os.path.join(OUTPUT_DIR, output_file)
 
-    if not os.path.exists(caminho_input):
-        raise FileNotFoundError(f"Arquivo de entrada '{input_file}' não encontrado em '{INPUT_DIR}'.")
+    if not os.path.exists(input_path):
+        raise FileNotFoundError(f"Input file '{input_file}' not found in '{INPUT_DIR}'.")
 
-    with open(caminho_input, "rb") as arquivo_entrada:
-        audio = arquivo_entrada.read()
+    with open(input_path, "rb") as input_audio:
+        audio_data = input_audio.read()
 
-    # Converte bytes para array de amostras
-    amostras = np.array(struct.unpack(f"{len(audio)//tamanho_amostra}{formato}", audio))
+    # Convert bytes to a sample array
+    samples = np.array(struct.unpack(f"{len(audio_data)//sample_size}{fmt}", audio_data))
 
-    # Aplica o filtro usando convolução
-    amostras_filtradas = np.convolve(amostras, coeficientes, mode="same").astype(np.int32)
+    # Apply the filter using convolution
+    filtered_samples = np.convolve(samples, coefficients, mode="same").astype(np.int32)
 
-    # Clipa os valores para evitar estouro ao salvar
-    max_valor = 2**(bits - 1) - 1
-    min_valor = -2**(bits - 1)
-    amostras_filtradas = np.clip(amostras_filtradas, min_valor, max_valor).astype(formato)
+    # Clip values to avoid overflow when saving
+    max_value = 2**(bits - 1) - 1
+    min_value = -2**(bits - 1)
+    filtered_samples = np.clip(filtered_samples, min_value, max_value).astype(fmt)
 
-    # Converte array filtrado de volta para bytes
-    audio_filtrado = struct.pack(f"{len(amostras_filtradas)}{formato}", *amostras_filtradas)
+    # Convert filtered array back to bytes
+    filtered_audio = struct.pack(f"{len(filtered_samples)}{fmt}", *filtered_samples)
 
-    # Salva o áudio filtrado
-    with open(caminho_output, "wb") as arquivo_saida:
-        arquivo_saida.write(audio_filtrado)
+    # Save the filtered audio
+    with open(output_path, "wb") as output_audio:
+        output_audio.write(filtered_audio)
 
-    print(f"Arquivo filtrado salvo em: {caminho_output}")
+    print(f"Filtered file saved to: {output_path}")
 
-# Programa principal
+# Main program
 if __name__ == "__main__":
-    # Carrega coeficientes
-    coeficientes = carregar_coeficientes()
+    # Load coefficients
+    coefficients = load_coefficients()
 
-    # Solicita parâmetros ao usuário
-    input_file = input("Digite o nome do arquivo de áudio (.pcm) a ser processado (ex: input.pcm): ")
-    output_file = input("Digite o nome do arquivo de saída (.pcm) (ex: output.pcm): ")
-    bits = int(input("Digite a profundidade de bits (16 ou 32): "))
+    # Request parameters from the user
+    input_file = input("Enter the name of the audio file (.pcm) to be processed (e.g., input.pcm): ")
+    output_file = input("Enter the name of the output file (.pcm) (e.g., output.pcm): ")
+    bits = int(input("Enter the bit depth (16 or 32): "))
 
     if bits not in [16, 32]:
-        raise ValueError("Profundidade de bits inválida! Escolha 16 ou 32.")
+        raise ValueError("Invalid bit depth! Choose 16 or 32.")
 
-    aplicar_filtro(input_file, output_file, coeficientes, bits)
+    apply_filter(input_file, output_file, coefficients, bits)
