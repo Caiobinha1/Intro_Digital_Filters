@@ -36,20 +36,29 @@ It uses the **Hamming window technique** to smooth the frequency response and mi
 1. **Frequency Normalization:**
    The cutoff frequencies are normalized by the sampling frequency:
    
-   \[ F_C = \frac{F_{cut}}{F_s} \]
+   \[
+   F_C = \frac{F_{cut}}{F_s}
+   \]
    
 2. **Sinc Function:**
    The core of the filter is derived from the sinc function:
    
-   \[ h[n] = \frac{\sin(2 \pi F_C (n - M/2))}{n - M/2}, \quad n \neq M/2 \]
-   \[ h[n] = 2 \pi F_C, \quad n = M/2 \]
+   \[
+   h[n] = 
+   \begin{cases} 
+   \frac{\sin(2 \pi F_C (n - M/2))}{n - M/2}, & n \neq M/2 \\ 
+   2 \pi F_C, & n = M/2 
+   \end{cases}
+   \]
    
    where \( M \) is the number of coefficients (filter length).
 
 3. **Windowing:**
    A Hamming window is applied to the raw sinc function to reduce spectral leakage:
    
-   \[ h_w[n] = h[n] \times \left( 0.54 - 0.46 \cos\left( \frac{2 \pi n}{M-1} \right) \right) \]
+   \[
+   h_w[n] = h[n] \times \left( 0.54 - 0.46 \cos\left( \frac{2 \pi n}{M-1} \right) \right)
+   \]
 
 4. **Filter Adjustments:**
    - For high-pass filters, coefficients are inverted, and a DC offset is added.
@@ -66,7 +75,9 @@ This script applies the FIR filter to audio files in the `input/` folder.
 1. **Convolution:**
    The filtering process uses convolution to apply the FIR filter to the audio signal:
    
-   \[ y[n] = \sum_{k=0}^{M-1} h[k] \cdot x[n-k] \]
+   \[
+   y[n] = \sum_{k=0}^{M-1} h[k] \cdot x[n-k]
+   \]
    
    where:
    - \( h[k] \): FIR filter coefficients
