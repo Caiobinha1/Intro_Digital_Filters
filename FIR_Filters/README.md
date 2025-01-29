@@ -141,8 +141,3 @@ This script reads an input audio file and applies the SMA filter.
 2. Applies a moving average filter with a user-defined window size \( k \).
 3. Saves the filtered output to the `output/` folder.
 
-
-## **References**
-
-Feel free to modify the scripts to suit your specific needs or extend the implementation!
-
