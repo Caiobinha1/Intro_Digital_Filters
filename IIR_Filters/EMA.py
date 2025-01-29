@@ -1,1 +1,0 @@
-#EMA - Exponencial mean avarage - Media Movel Exponencial

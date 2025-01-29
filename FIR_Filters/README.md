@@ -12,6 +12,7 @@ FIR_Filters/
 ├── output/               # Stores processed audio files
 ├── generate_coefficients.py  # Script to generate FIR filter coefficients
 ├── apply_filter.py       # Script to apply FIR filters to audio files
+├── SMA.py                # Script to apply SMA filter to audio files
 ```
 
 ---
@@ -114,6 +115,32 @@ The filtered audio files will be saved in the `output/` folder.
 - Use a sufficient number of coefficients for better filter accuracy, but note that higher values increase computational complexity.
 
 ---
+
+## **Simple Moving Average (SMA) Filter**
+The **Simple Moving Average (SMA)** filter is a basic smoothing technique used in signal processing. It reduces short-term noise by averaging a set number of previous samples.
+
+### **How SMA Works**
+The SMA filter computes the average of the last \( k \) samples at each step:
+
+\[
+y[n] = \frac{1}{k} \sum_{i=0}^{k-1} x[n-i]
+\]
+
+where:
+- \( x[n] \) is the input signal,
+- \( y[n] \) is the filtered output,
+- \( k \) is the window size (number of previous values to average).
+
+This method effectively removes high-frequency noise, making it useful for smoothing audio signals.
+
+### **`apply_sma.py` Script**
+This script reads an input audio file and applies the SMA filter.
+
+##### **Steps:**
+1. Reads a **PCM audio file**.
+2. Applies a moving average filter with a user-defined window size \( k \).
+3. Saves the filtered output to the `output/` folder.
+
 
 ## **References**
 
