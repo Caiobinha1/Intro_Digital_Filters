@@ -25,7 +25,7 @@ To run the filter implementations, ensure you have the following installed:
 ├── IIR/
 │   ├── LMS.py
 │   ├── README.md
-|   ├──
+|   ├── input
 |   ├── output
 ├── README.md (this file)
 ```
